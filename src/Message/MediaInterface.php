@@ -1,22 +1,20 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: Hanson
- * Date: 2017/1/15
- * Time: 2:53
+
+/*
+ * This file is part of PHP CS Fixer.
+ * (c) pei.greet <pei.greet@qq.com>
+ * This source file is subject to the MIT license that is bundled
+ * with this source code in the file LICENSE.
  */
 
 namespace Hanson\Vbot\Message;
 
-
 interface MediaInterface
 {
-
     /**
-     * 下载文件
+     * 下载文件.
      *
      * @return mixed
      */
     public function download();
-
 }

@@ -1,28 +1,27 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: Hanson
- * Date: 2017/1/15
- * Time: 3:20
+
+/*
+ * This file is part of PHP CS Fixer.
+ * (c) pei.greet <pei.greet@qq.com>
+ * This source file is subject to the MIT license that is bundled
+ * with this source code in the file LICENSE.
  */
 
 namespace Hanson\Vbot\Message;
+
 use Hanson\Vbot\Support\System;
 
-
 /**
- * Class MediaTrait
+ * Class MediaTrait.
+ *
  * @property string $folder
- * @package Hanson\Vbot\Message
  */
 trait MediaTrait
 {
-
     public static function getPath($folder)
     {
         $path = System::getPath() . $folder;
 
         return realpath($path);
     }
-
 }

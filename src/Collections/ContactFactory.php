@@ -1,20 +1,18 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: Hanson
- * Date: 2016/12/12
- * Time: 20:41
+
+/*
+ * This file is part of PHP CS Fixer.
+ * (c) pei.greet <pei.greet@qq.com>
+ * This source file is subject to the MIT license that is bundled
+ * with this source code in the file LICENSE.
  */
 
 namespace Hanson\Vbot\Collections;
 
-
-use Hanson\Vbot\Support\Console;
 use Hanson\Vbot\Support\FileManager;
 
 class ContactFactory
 {
-
     const SPECIAL_USERS = ['newsapp', 'fmessage', 'filehelper', 'weibo', 'qqmail',
         'fmessage', 'tmessage', 'qmessage', 'qqsync', 'floatbottle',
         'lbsapp', 'shakeapp', 'medianote', 'qqfriend', 'readerapp',
@@ -22,7 +20,7 @@ class ContactFactory
         'feedsapp', 'voip', 'blogappweixin', 'weixin', 'brandsessionholder',
         'weixinreminder', 'wxid_novlwrv3lqwv11', 'gh_22b87fa7cb3c',
         'officialaccounts', 'notification_messages', 'wxid_novlwrv3lqwv11',
-        'gh_22b87fa7cb3c', 'wxitil', 'userexperience_alarm', 'notification_messages'];
+        'gh_22b87fa7cb3c', 'wxitil', 'userexperience_alarm', 'notification_messages', ];
 
     public function __construct()
     {
@@ -33,7 +31,7 @@ class ContactFactory
     {
         $this->makeContactList();
 
-        $contact = contact()->get(myself()->username);
+        $contact        = contact()->get(myself()->username);
         myself()->alias = isset($contact['Alias']) ? $contact['Alias'] : myself()->nickname ?: myself()->username;
 
         $this->getBatchGroupMembers();
@@ -48,7 +46,8 @@ class ContactFactory
     }
 
     /**
-     * make instance model
+     * make instance model.
+     *
      * @param int $seq
      */
     public function makeContactList($seq = 0)
@@ -59,11 +58,11 @@ class ContactFactory
 
         if (isset($result['MemberList']) && $result['MemberList']) {
             foreach ($result['MemberList'] as $contact) {
-                if (official()->isOfficial($contact['VerifyFlag'])) { #公众号
+                if (official()->isOfficial($contact['VerifyFlag'])) { //公众号
                     Official::getInstance()->put($contact['UserName'], $contact);
-                } elseif (in_array($contact['UserName'], static::SPECIAL_USERS)) { # 特殊账户
+                } elseif (in_array($contact['UserName'], static::SPECIAL_USERS, true)) { // 特殊账户
                     Special::getInstance()->put($contact['UserName'], $contact);
-                } elseif (strstr($contact['UserName'], '@@') !== false) { # 群聊
+                } elseif (strstr($contact['UserName'], '@@') !== false) { // 群聊
                     group()->put($contact['UserName'], $contact);
                 } else {
                     contact()->put($contact['UserName'], $contact);
@@ -77,7 +76,7 @@ class ContactFactory
     }
 
     /**
-     * 获取群组成员
+     * 获取群组成员.
      */
     public function getBatchGroupMembers()
     {
@@ -90,15 +89,15 @@ class ContactFactory
 
         $content = http()->json($url, [
             'BaseRequest' => server()->baseRequest,
-            'Count' => group()->count(),
-            'List' => $list
+            'Count'       => group()->count(),
+            'List'        => $list,
         ], true);
 
         $this->initGroupMembers($content);
     }
 
     /**
-     * 初始化群组成员
+     * 初始化群组成员.
      *
      * @param $array
      */
@@ -106,7 +105,7 @@ class ContactFactory
     {
         if (isset($array['ContactList']) && $array['ContactList']) {
             foreach ($array['ContactList'] as $group) {
-                $groupAccount = group()->get($group['UserName']);
+                $groupAccount               = group()->get($group['UserName']);
                 $groupAccount['MemberList'] = $group['MemberList'];
                 $groupAccount['ChatRoomId'] = $group['EncryChatRoomId'];
                 group()->put($group['UserName'], $groupAccount);
@@ -115,7 +114,5 @@ class ContactFactory
                 }
             }
         }
-
     }
-
 }

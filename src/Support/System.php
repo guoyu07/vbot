@@ -1,19 +1,18 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: Hanson
- * Date: 2017/1/20
- * Time: 18:37
+
+/*
+ * This file is part of PHP CS Fixer.
+ * (c) pei.greet <pei.greet@qq.com>
+ * This source file is subject to the MIT license that is bundled
+ * with this source code in the file LICENSE.
  */
 
 namespace Hanson\Vbot\Support;
 
-
 class System
 {
-
     /**
-     * 判断运行服务器是否windows
+     * 判断运行服务器是否windows.
      *
      * @return bool
      */
@@ -26,7 +25,7 @@ class System
     {
         $path = server()->config['tmp'] . '/' . myself()->alias . '/';
 
-        if(!is_dir(realpath($path))){
+        if (!is_dir(realpath($path))) {
             mkdir($path, 0700, true);
         }
 

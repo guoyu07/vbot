@@ -1,20 +1,19 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: Hanson
- * Date: 2016/12/16
- * Time: 18:33
+
+/*
+ * This file is part of PHP CS Fixer.
+ * (c) pei.greet <pei.greet@qq.com>
+ * This source file is subject to the MIT license that is bundled
+ * with this source code in the file LICENSE.
  */
 
 namespace Hanson\Vbot\Message\Entity;
-
 
 use Hanson\Vbot\Message\MessageInterface;
 use Hanson\Vbot\Support\Console;
 
 class Text extends Message implements MessageInterface
 {
-
     public $isAt;
 
     public function __construct($msg)
@@ -25,10 +24,11 @@ class Text extends Message implements MessageInterface
     }
 
     /**
-     * 发送消息
+     * 发送消息.
      *
      * @param $word string|Text 消息内容
      * @param $username string 目标username
+     *
      * @return bool
      */
     public static function send($username, $word)
@@ -43,15 +43,15 @@ class Text extends Message implements MessageInterface
 
         $data = [
             'BaseRequest' => server()->baseRequest,
-            'Msg' => [
-                'Type' => 1,
-                'Content' => $word,
+            'Msg'         => [
+                'Type'         => 1,
+                'Content'      => $word,
                 'FromUserName' => myself()->username,
-                'ToUserName' => $username,
-                'LocalID' => $random,
-                'ClientMsgId' => $random,
+                'ToUserName'   => $username,
+                'LocalID'      => $random,
+                'ClientMsgId'  => $random,
             ],
-            'Scene' => 0
+            'Scene' => 0,
         ];
         $result = http()->post(server()->baseUri . '/webwxsendmsg?pass_ticket=' . server()->passTicket,
             json_encode($data, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES), true
@@ -59,6 +59,7 @@ class Text extends Message implements MessageInterface
 
         if ($result['BaseResponse']['Ret'] != 0) {
             Console::log('发送消息失败', Console::WARNING);
+
             return false;
         }
 

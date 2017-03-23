@@ -1,13 +1,13 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: Hanson
- * Date: 2016/12/9
- * Time: 22:51
+
+/*
+ * This file is part of PHP CS Fixer.
+ * (c) pei.greet <pei.greet@qq.com>
+ * This source file is subject to the MIT license that is bundled
+ * with this source code in the file LICENSE.
  */
 
 namespace Hanson\Vbot\Support;
-
 
 use Carbon\Carbon;
 use PHPQRCode\QRcode;
@@ -17,13 +17,12 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class Console
 {
-
-    const INFO = 'INFO';
+    const INFO    = 'INFO';
     const WARNING = 'WARNING';
-    const ERROR = 'ERROR';
+    const ERROR   = 'ERROR';
 
     /**
-     * 输出字符串
+     * 输出字符串.
      *
      * @param $str
      * @param string $level
@@ -34,7 +33,7 @@ class Console
     }
 
     /**
-     * debug 模式下调试输出
+     * debug 模式下调试输出.
      *
      * @param $str
      */
@@ -46,19 +45,6 @@ class Console
     }
 
     /**
-     * 初始化二维码style
-     *
-     * @param OutputInterface $output
-     */
-    private static function initQrcodeStyle(OutputInterface $output) {
-        $style = new OutputFormatterStyle('black', 'black', array('bold'));
-        $output->getFormatter()->setStyle('blackc', $style);
-        $style = new OutputFormatterStyle('white', 'white', array('bold'));
-        $output->getFormatter()->setStyle('whitec', $style);
-    }
-
-
-    /**
      * 控制台显示二维码
      *
      * @param $text
@@ -68,10 +54,10 @@ class Console
         $output = new ConsoleOutput();
         static::initQrcodeStyle($output);
 
-        if(System::isWin()){
+        if (System::isWin()) {
             $pxMap = ['<whitec>mm</whitec>', '<blackc>  </blackc>'];
             system('cls');
-        }else{
+        } else {
             $pxMap = ['<whitec>  </whitec>', '<blackc>  </blackc>'];
             system('clear');
         }
@@ -88,5 +74,18 @@ class Console
             }
             $output->writeln($pxMap[0]);
         }
+    }
+
+    /**
+     * 初始化二维码style.
+     *
+     * @param OutputInterface $output
+     */
+    private static function initQrcodeStyle(OutputInterface $output)
+    {
+        $style = new OutputFormatterStyle('black', 'black', ['bold']);
+        $output->getFormatter()->setStyle('blackc', $style);
+        $style = new OutputFormatterStyle('white', 'white', ['bold']);
+        $output->getFormatter()->setStyle('whitec', $style);
     }
 }

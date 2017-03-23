@@ -1,9 +1,10 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: Hanson
- * Date: 2016/12/14
- * Time: 23:08
+
+/*
+ * This file is part of PHP CS Fixer.
+ * (c) pei.greet <pei.greet@qq.com>
+ * This source file is subject to the MIT license that is bundled
+ * with this source code in the file LICENSE.
  */
 
 namespace Hanson\Vbot\Core;
@@ -22,7 +23,7 @@ class MessageHandler
     /**
      * @var MessageHandler
      */
-    static $instance = null;
+    public static $instance = null;
 
     private $handler;
 
@@ -40,28 +41,29 @@ class MessageHandler
 
     public function __construct()
     {
-        $this->sync = new Sync();
+        $this->sync           = new Sync();
         $this->messageFactory = new MessageFactory();
     }
 
     /**
-     * 设置单例模式
+     * 设置单例模式.
      *
      * @return MessageHandler
      */
     public static function getInstance()
     {
         if (static::$instance === null) {
-            static::$instance = new MessageHandler();
+            static::$instance = new self();
         }
 
         return static::$instance;
     }
 
     /**
-     * 消息处理器
+     * 消息处理器.
      *
      * @param Closure $closure
+     *
      * @throws \Exception
      */
     public function setMessageHandler(Closure $closure)
@@ -74,9 +76,10 @@ class MessageHandler
     }
 
     /**
-     * 自定义处理器
+     * 自定义处理器.
      *
      * @param Closure $closure
+     *
      * @throws \Exception
      */
     public function setCustomHandler(Closure $closure)
@@ -89,9 +92,10 @@ class MessageHandler
     }
 
     /**
-     * 退出处理器
+     * 退出处理器.
      *
      * @param Closure $closure
+     *
      * @throws \Exception
      */
     public function setExitHandler(Closure $closure)
@@ -104,9 +108,10 @@ class MessageHandler
     }
 
     /**
-     * 异常处理器
+     * 异常处理器.
      *
      * @param Closure $closure
+     *
      * @throws \Exception
      */
     public function setExceptionHandler(Closure $closure)
@@ -119,9 +124,10 @@ class MessageHandler
     }
 
     /**
-     * 执行一次的处理器
+     * 执行一次的处理器.
      *
      * @param Closure $closure
+     *
      * @throws \Exception
      */
     public function setOnceHandler(Closure $closure)
@@ -134,7 +140,7 @@ class MessageHandler
     }
 
     /**
-     * 轮询消息API接口
+     * 轮询消息API接口.
      */
     public function listen()
     {
@@ -147,10 +153,10 @@ class MessageHandler
                 call_user_func_array($this->customHandler, []);
             }
 
-            $time = time();
+            $time                     = time();
             list($retCode, $selector) = $this->sync->checkSync();
 
-            if (in_array($retCode, ['1100', '1101'])) { # 微信客户端上登出或者其他设备登录
+            if (in_array($retCode, ['1100', '1101'], true)) { // 微信客户端上登出或者其他设备登录
                 Console::log('微信客户端正常退出');
                 if ($this->exitHandler) {
                     call_user_func_array($this->exitHandler, []);
@@ -172,7 +178,7 @@ class MessageHandler
     }
 
     /**
-     * 处理消息
+     * 处理消息.
      *
      * @param $selector
      */
@@ -231,5 +237,4 @@ class MessageHandler
             fclose($file);
         }
     }
-
 }

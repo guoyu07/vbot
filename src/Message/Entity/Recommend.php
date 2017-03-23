@@ -1,9 +1,10 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: Hanson
- * Date: 2017/1/15
- * Time: 12:29
+
+/*
+ * This file is part of PHP CS Fixer.
+ * (c) pei.greet <pei.greet@qq.com>
+ * This source file is subject to the MIT license that is bundled
+ * with this source code in the file LICENSE.
  */
 
 namespace Hanson\Vbot\Message\Entity;
@@ -12,7 +13,6 @@ use Hanson\Vbot\Message\MessageInterface;
 
 class Recommend extends Message implements MessageInterface
 {
-
     /**
      * @var array 推荐信息
      */
@@ -27,7 +27,7 @@ class Recommend extends Message implements MessageInterface
     public $description;
 
     /**
-     * 国内为省，国外为国
+     * 国内为省，国外为国.
      *
      * @var string
      */
@@ -57,15 +57,15 @@ class Recommend extends Message implements MessageInterface
     {
         $isMatch = preg_match('/bigheadimgurl="(http:\/\/.+?)"\ssmallheadimgurl="(http:\/\/.+?)".+province="(.+?)"\scity="(.+?)".+certflag="(\d+)"\scertinfo="(.+?)"/', $this->msg['Content'], $matches);
 
-        if($isMatch){
-            $this->bigAvatar = $matches[1];
+        if ($isMatch) {
+            $this->bigAvatar   = $matches[1];
             $this->smallAvatar = $matches[2];
-            $this->province = $matches[3];
-            $this->city = $matches[4];
-            $flag = $matches[5];
-            $desc = $matches[6];
-            if(official()->isOfficial($flag)){
-                $this->isOfficial = true;
+            $this->province    = $matches[3];
+            $this->city        = $matches[4];
+            $flag              = $matches[5];
+            $desc              = $matches[6];
+            if (official()->isOfficial($flag)) {
+                $this->isOfficial  = true;
                 $this->description = $desc;
             }
         }

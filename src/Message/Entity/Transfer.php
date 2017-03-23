@@ -1,9 +1,10 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: Hanson
- * Date: 2017/1/15
- * Time: 12:29
+
+/*
+ * This file is part of PHP CS Fixer.
+ * (c) pei.greet <pei.greet@qq.com>
+ * This source file is subject to the MIT license that is bundled
+ * with this source code in the file LICENSE.
  */
 
 namespace Hanson\Vbot\Message\Entity;
@@ -12,9 +13,8 @@ use Hanson\Vbot\Message\MessageInterface;
 
 class Transfer extends Message implements MessageInterface
 {
-
     /**
-     * 转账金额 单位 元
+     * 转账金额 单位 元.
      *
      * @var string
      */
@@ -29,10 +29,10 @@ class Transfer extends Message implements MessageInterface
 
     public function make()
     {
-        $array = (array)simplexml_load_string($this->msg['Content'], 'SimpleXMLElement', LIBXML_NOCDATA);
+        $array = (array) simplexml_load_string($this->msg['Content'], 'SimpleXMLElement', LIBXML_NOCDATA);
 
-        $des = (array)$array['appmsg']->des;
-        $fee = (array)$array['appmsg']->wcpayinfo;
+        $des = (array) $array['appmsg']->des;
+        $fee = (array) $array['appmsg']->wcpayinfo;
 
         $this->content = current($des);
 

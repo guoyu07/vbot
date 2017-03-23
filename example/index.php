@@ -1,47 +1,46 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: HanSon
- * Date: 2016/12/7
- * Time: 16:33
+
+/*
+ * This file is part of PHP CS Fixer.
+ * (c) pei.greet <pei.greet@qq.com>
+ * This source file is subject to the MIT license that is bundled
+ * with this source code in the file LICENSE.
  */
 
 require_once __DIR__ . './../vendor/autoload.php';
 
 use Hanson\Vbot\Foundation\Vbot;
-use Hanson\Vbot\Message\Entity\Message;
-use Hanson\Vbot\Message\Entity\Image;
-use Hanson\Vbot\Message\Entity\Text;
 use Hanson\Vbot\Message\Entity\Emoticon;
+use Hanson\Vbot\Message\Entity\GroupChange;
+use Hanson\Vbot\Message\Entity\Image;
 use Hanson\Vbot\Message\Entity\Location;
+use Hanson\Vbot\Message\Entity\Message;
+use Hanson\Vbot\Message\Entity\Mina;
+use Hanson\Vbot\Message\Entity\Official;
+use Hanson\Vbot\Message\Entity\Recall;
+use Hanson\Vbot\Message\Entity\Recommend;
+use Hanson\Vbot\Message\Entity\RedPacket;
+use Hanson\Vbot\Message\Entity\RequestFriend;
+use Hanson\Vbot\Message\Entity\Share;
+use Hanson\Vbot\Message\Entity\Text;
+use Hanson\Vbot\Message\Entity\Touch;
+use Hanson\Vbot\Message\Entity\Transfer;
 use Hanson\Vbot\Message\Entity\Video;
 use Hanson\Vbot\Message\Entity\Voice;
-use Hanson\Vbot\Message\Entity\Recall;
-use Hanson\Vbot\Message\Entity\RedPacket;
-use Hanson\Vbot\Message\Entity\Transfer;
-use Hanson\Vbot\Message\Entity\Recommend;
-use Hanson\Vbot\Message\Entity\Share;
-use Hanson\Vbot\Message\Entity\Official;
-use Hanson\Vbot\Message\Entity\Touch;
-use Hanson\Vbot\Message\Entity\Mina;
-use Hanson\Vbot\Message\Entity\RequestFriend;
-use Hanson\Vbot\Message\Entity\GroupChange;
-use Hanson\Vbot\Message\Entity\NewFriend;
 
-$path = __DIR__ . '/./../tmp/';
+$path  = __DIR__ . '/./../tmp/';
 $robot = new Vbot([
-    'tmp' => $path,
-    'debug' => true
+    'tmp'   => $path,
+    'debug' => true,
 ]);
 
 // 图灵自动回复
 function reply($str)
 {
     return http()->post('http://www.tuling123.com/openapi/api', [
-        'key' => '1dce02aef026258eff69635a06b0ab7d',
-        'info' => $str
+        'key'  => '1dce02aef026258eff69635a06b0ab7d',
+        'info' => $str,
     ], true)['text'];
-
 }
 
 $robot->server->setMessageHandler(function ($message) use ($path) {
@@ -49,8 +48,9 @@ $robot->server->setMessageHandler(function ($message) use ($path) {
 
     // 位置信息 返回位置文字
     if ($message instanceof Location) {
-        /** @var $message Location */
+        /* @var $message Location */
         Text::send('地图链接：' . $message->from['UserName'], $message->url);
+
         return '位置：' . $message;
     }
 
@@ -62,7 +62,6 @@ $robot->server->setMessageHandler(function ($message) use ($path) {
             return reply($message->content);
             // 群组@我回复
         } elseif ($message->fromType === 'Group') {
-
             if (str_contains($message->content, '设置群名称') && $message->from['Alias'] === 'hanson1994') {
                 group()->setGroupName($message->from['UserName'], str_replace('设置群名称', '', $message->content));
             }
@@ -75,12 +74,12 @@ $robot->server->setMessageHandler(function ($message) use ($path) {
 
     // 图片信息 返回接收到的图片
     if ($message instanceof Image) {
-//        return $message;
+        //        return $message;
     }
 
     // 视频信息 返回接收到的视频
     if ($message instanceof Video) {
-//        return $message;
+        //        return $message;
     }
 
     // 表情信息 返回接收到的表情
@@ -90,7 +89,7 @@ $robot->server->setMessageHandler(function ($message) use ($path) {
 
     // 语音消息
     if ($message instanceof Voice) {
-        /** @var $message Voice */
+        /* @var $message Voice */
 //        return '收到一条语音并下载在' . $message::getPath($message::$folder) . "/{$message->msg['MsgId']}.mp3";
     }
 
@@ -121,7 +120,7 @@ $robot->server->setMessageHandler(function ($message) use ($path) {
 
     // 转账信息
     if ($message instanceof Transfer) {
-        /** @var $message Transfer */
+        /* @var $message Transfer */
         return $message->content . ' 收到金额 ' . $message->fee;
     }
 
@@ -131,10 +130,10 @@ $robot->server->setMessageHandler(function ($message) use ($path) {
         if ($message->isOfficial) {
             return $message->from['NickName'] . ' 向你推荐了公众号 ' . $message->province . $message->city .
             " {$message->info['NickName']} 公众号信息： {$message->description}";
-        } else {
-            return $message->from['NickName'] . ' 向你推荐了 ' . $message->province . $message->city .
-            " {$message->info['NickName']} 头像链接： {$message->bigAvatar}";
         }
+
+        return $message->from['NickName'] . ' 向你推荐了 ' . $message->province . $message->city .
+            " {$message->info['NickName']} 头像链接： {$message->bigAvatar}";
     }
 
     // 请求添加信息
@@ -159,6 +158,7 @@ $robot->server->setMessageHandler(function ($message) use ($path) {
         if ($message->app) {
             $reply .= "\n来源APP：{$message->app}";
         }
+
         return $reply;
     }
 
@@ -166,6 +166,7 @@ $robot->server->setMessageHandler(function ($message) use ($path) {
     if ($message instanceof Mina) {
         /** @var $message Mina */
         $reply = "收到小程序\n小程序名词：{$message->title}\n链接：{$message->url}";
+
         return $reply;
     }
 
@@ -173,12 +174,13 @@ $robot->server->setMessageHandler(function ($message) use ($path) {
     if ($message instanceof Official) {
         /** @var $message Official */
         $reply = "收到公众号推送\n标题：{$message->title}\n描述：{$message->description}\n链接：{$message->url}\n来源公众号名称：{$message->app}";
+
         return $reply;
     }
 
     // 手机点击聊天事件
     if ($message instanceof Touch) {
-//        Text::send($message->msg['ToUserName'], "我点击了此聊天");
+        //        Text::send($message->msg['ToUserName'], "我点击了此聊天");
     }
 
     // 新增好友
@@ -191,21 +193,23 @@ $robot->server->setMessageHandler(function ($message) use ($path) {
         /** @var $message GroupChange */
         if ($message->action === 'ADD') {
             \Hanson\Vbot\Support\Console::log('新人进群');
+
             return '欢迎新人 ' . $message->nickname;
         } elseif ($message->action === 'REMOVE') {
             \Hanson\Vbot\Support\Console::log('群主踢人了');
+
             return $message->content;
         } elseif ($message->action === 'RENAME') {
-//            \Hanson\Vbot\Support\Console::log($message->from['NickName'] . ' 改名为 ' . $message->rename);
-            if ($message->rename !== 'vbot 测试群'){
+            //            \Hanson\Vbot\Support\Console::log($message->from['NickName'] . ' 改名为 ' . $message->rename);
+            if ($message->rename !== 'vbot 测试群') {
                 group()->setGroupName($message->from['UserName'], 'vbot 测试群');
+
                 return '行不改名,坐不改姓！';
             }
         }
     }
 
     return false;
-
 });
 
 $robot->server->setExitHandler(function () {

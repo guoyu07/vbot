@@ -25,5 +25,12 @@
         "psr-4": {
             "Hanson\\Vbot\\": "src/"
         }
+    },
+    
+    "repositories": {
+        "packagist": {
+            "type": "composer",
+            "url": "https://packagist.phpcomposer.com"
+        }
     }
 }

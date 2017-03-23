@@ -1,19 +1,18 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: Hanson
- * Date: 2016/12/16
- * Time: 21:13
+
+/*
+ * This file is part of PHP CS Fixer.
+ * (c) pei.greet <pei.greet@qq.com>
+ * This source file is subject to the MIT license that is bundled
+ * with this source code in the file LICENSE.
  */
 
 namespace Hanson\Vbot\Message\Entity;
-
 
 use Hanson\Vbot\Message\MessageInterface;
 
 class Location extends Message implements MessageInterface
 {
-
     /**
      * @var string 位置链接
      */
@@ -27,9 +26,10 @@ class Location extends Message implements MessageInterface
     }
 
     /**
-     * 判断是否位置消息
+     * 判断是否位置消息.
      *
      * @param $content
+     *
      * @return bool
      */
     public static function isLocation($content)
@@ -37,18 +37,18 @@ class Location extends Message implements MessageInterface
         return str_contains($content['Content'], 'webwxgetpubliclinkimg') && $content['Url'];
     }
 
+    public function make()
+    {
+        $this->setLocationText();
+    }
+
     /**
-     * 设置位置文字信息
+     * 设置位置文字信息.
      */
     private function setLocationText()
     {
         $this->content = current(explode(":\n", $this->msg['Content']));
 
         $this->url = $this->msg['Url'];
-    }
-
-    public function make()
-    {
-        $this->setLocationText();
     }
 }

@@ -1,42 +1,42 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: Hanson
- * Date: 2016/12/13
- * Time: 20:56
+
+/*
+ * This file is part of PHP CS Fixer.
+ * (c) pei.greet <pei.greet@qq.com>
+ * This source file is subject to the MIT license that is bundled
+ * with this source code in the file LICENSE.
  */
 
 namespace Hanson\Vbot\Collections;
-
 
 use Illuminate\Support\Collection;
 
 class Contact extends Collection
 {
-
     /**
      * @var Contact
      */
-    static $instance = null;
+    public static $instance = null;
 
     /**
-     * create a single instance
+     * create a single instance.
      *
      * @return Contact
      */
     public static function getInstance()
     {
         if (static::$instance === null) {
-            static::$instance = new Contact();
+            static::$instance = new self();
         }
 
         return static::$instance;
     }
 
     /**
-     * 根据微信号获取联系人
+     * 根据微信号获取联系人.
      *
      * @param $id
+     *
      * @return mixed
      */
     public function getContactById($id)
@@ -49,9 +49,10 @@ class Contact extends Collection
     }
 
     /**
-     * 根据微信号获取联系username
+     * 根据微信号获取联系username.
      *
      * @param $id
+     *
      * @return mixed
      */
     public function getUsernameById($id)
@@ -67,6 +68,7 @@ class Contact extends Collection
      * 根据通讯录中的备注获取通讯对象
      *
      * @param $id
+     *
      * @return mixed
      */
     public function getUsernameByRemarkName($id)
@@ -83,6 +85,7 @@ class Contact extends Collection
      *
      * @param $nickname
      * @param bool $blur
+     *
      * @return mixed
      */
     public function getUsernameByNickname($nickname, $blur = false)
@@ -101,10 +104,10 @@ class Contact extends Collection
         $url = sprintf('%s/webwxoplog?lang=zh_CN&pass_ticket=%s', server()->baseUri, server()->passTicket);
 
         $result = http()->post($url, json_encode([
-            'UserName' => $username,
-            'CmdId' => 2,
-            'RemarkName' => $remarkName,
-            'BaseRequest' => server()->baseRequest
+            'UserName'    => $username,
+            'CmdId'       => 2,
+            'RemarkName'  => $remarkName,
+            'BaseRequest' => server()->baseRequest,
         ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES), true);
 
         return $result['BaseResponse']['Ret'] == 0;
@@ -115,13 +118,12 @@ class Contact extends Collection
         $url = sprintf('%s/webwxoplog?lang=zh_CN&pass_ticket=%s', server()->baseUri, server()->passTicket);
 
         $result = http()->json($url, [
-            'UserName' => $username,
-            'CmdId' => 3,
-            'OP' => (int)$isStick,
-            'BaseRequest' => server()->baseRequest
+            'UserName'    => $username,
+            'CmdId'       => 3,
+            'OP'          => (int) $isStick,
+            'BaseRequest' => server()->baseRequest,
         ], true);
 
         return $result['BaseResponse']['Ret'] == 0;
     }
-
 }

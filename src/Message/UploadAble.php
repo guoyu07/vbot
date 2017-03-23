@@ -1,106 +1,107 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: HanSon
- * Date: 2017/1/9
- * Time: 16:18
+
+/*
+ * This file is part of PHP CS Fixer.
+ * (c) pei.greet <pei.greet@qq.com>
+ * This source file is subject to the MIT license that is bundled
+ * with this source code in the file LICENSE.
  */
 
 namespace Hanson\Vbot\Message;
+
 use Hanson\Vbot\Core\Server;
 use Hanson\Vbot\Support\Console;
 
-
 /**
- * Class UploadAble
- * @package Hanson\Vbot\Message\
+ * Class UploadAble.
  *
  * @property  string static $mediaCount
  */
 trait UploadAble
 {
-
-    static $file;
+    public static $file;
 
     /**
      * @param $username
      * @param $file
+     *
      * @return bool|mixed|string
      */
     public static function uploadMedia($username, $file)
     {
-        $url = 'https://file.wx2.qq.com/cgi-bin/mmwebwx-bin/webwxuploadmedia?f=json';
+        $url                = 'https://file.wx2.qq.com/cgi-bin/mmwebwx-bin/webwxuploadmedia?f=json';
         static::$mediaCount = ++static::$mediaCount;
-        static::$file = $file;
+        static::$file       = $file;
 
         list($mime, $mediaType) = static::getMediaType($file);
 
         $data = [
-            'id' => 'WU_FILE_' .static::$mediaCount,
-            'name' => basename($file),
-            'type' => $mime,
-            'lastModifieDate' => gmdate('D M d Y H:i:s TO', filemtime($file)).' (CST)',
-            'size' => filesize($file),
-            'mediatype' => $mediaType,
+            'id'                 => 'WU_FILE_' . static::$mediaCount,
+            'name'               => basename($file),
+            'type'               => $mime,
+            'lastModifieDate'    => gmdate('D M d Y H:i:s TO', filemtime($file)) . ' (CST)',
+            'size'               => filesize($file),
+            'mediatype'          => $mediaType,
             'uploadmediarequest' => json_encode([
-                'BaseRequest' => server()->baseRequest,
+                'BaseRequest'   => server()->baseRequest,
                 'ClientMediaId' => time(),
-                'TotalLen' => filesize($file),
-                'StartPos' => 0,
-                'DataLen' => filesize($file),
-                'MediaType' => 4,
-                'UploadType' => 2,
-                'FromUserName' => myself()->username,
-                'ToUserName' => $username,
-                'FileMd5' => md5_file($file)
-            ], JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES),
+                'TotalLen'      => filesize($file),
+                'StartPos'      => 0,
+                'DataLen'       => filesize($file),
+                'MediaType'     => 4,
+                'UploadType'    => 2,
+                'FromUserName'  => myself()->username,
+                'ToUserName'    => $username,
+                'FileMd5'       => md5_file($file),
+            ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES),
             'webwx_data_ticket' => static::getTicket(),
-            'pass_ticket' => (server()->passTicket),
-            'filename' => fopen($file, 'r'),
+            'pass_ticket'       => (server()->passTicket),
+            'filename'          => fopen($file, 'r'),
         ];
 
         $data = static::dataToMultipart($data);
 
         $result = http()->request($url, 'post', [
-            'multipart' => $data
+            'multipart' => $data,
         ]);
         $result = json_decode($result, true);
 
-        if($result['BaseResponse']['Ret'] == 0){
+        if ($result['BaseResponse']['Ret'] == 0) {
             return $result;
         }
 
         return false;
     }
 
-
     public static function send($username, $file)
     {
         $response = static::uploadMedia($username, $file);
 
-        if(!$response){
+        if (!$response) {
             Console::log("文件 {$file} 上传失败", Console::WARNING);
+
             return false;
         }
 
         $mediaId = $response['MediaId'];
 
-        $url = sprintf(server()->baseUri . '/webwxsendappmsg?fun=async&f=json' , server()->passTicket);
+        $url  = sprintf(server()->baseUri . '/webwxsendappmsg?fun=async&f=json', server()->passTicket);
         $data = [
             'BaseRequest'=> server()->baseRequest,
-            'Msg'=> [
-                'Type'=> 6,
-                'Content' => sprintf("<appmsg appid='wxeb7ec651dd0aefa9' sdkver=''><title>%s</title><des></des><action></action><type>6</type><content></content><url></url><lowurl></lowurl><appattach><totallen>%s</totallen><attachid>%s</attachid><fileext>%s</fileext></appattach><extinfo></extinfo></appmsg>", basename($file), filesize($file), $mediaId, end(explode('.', $file))),
+            'Msg'        => [
+                'Type'        => 6,
+                'Content'     => sprintf("<appmsg appid='wxeb7ec651dd0aefa9' sdkver=''><title>%s</title><des></des><action></action><type>6</type><content></content><url></url><lowurl></lowurl><appattach><totallen>%s</totallen><attachid>%s</attachid><fileext>%s</fileext></appattach><extinfo></extinfo></appmsg>", basename($file), filesize($file), $mediaId, end(explode('.', $file))),
                 'FromUserName'=> myself()->username,
-                'ToUserName'=> $username,
-                'LocalID'=> time() * 1e4,
-                'ClientMsgId'=> time() * 1e4
-            ]
+                'ToUserName'  => $username,
+                'LocalID'     => time() * 1e4,
+                'ClientMsgId' => time() * 1e4,
+            ],
         ];
         $result = http()->json($url, $data, true);
 
-        if($result['BaseResponse']['Ret'] != 0){
+        if ($result['BaseResponse']['Ret'] != 0) {
             Console::log('发送文件失败', Console::WARNING);
+
             return false;
         }
 
@@ -108,9 +109,10 @@ trait UploadAble
     }
 
     /**
-     * 获取媒体类型
+     * 获取媒体类型.
      *
      * @param $file
+     *
      * @return array
      */
     private static function getMediaType($file)
@@ -119,14 +121,14 @@ trait UploadAble
         $mime =  finfo_file($info, $file);
         finfo_close($info);
 
-        $fileExplode = explode('.', $file);
+        $fileExplode   = explode('.', $file);
         $fileExtension = end($fileExplode);
 
         return [$mime, $fileExtension === 'jpg' ? 'pic' : $fileExtension === 'mp4' ? 'video' : 'doc'];
     }
 
     /**
-     * 获取cookie的ticket
+     * 获取cookie的ticket.
      *
      * @return mixed
      */
@@ -134,15 +136,16 @@ trait UploadAble
     {
         $cookies = http()->getClient()->getConfig('cookies')->toArray();
 
-        $key = array_search('webwx_data_ticket', array_column($cookies, 'Name'));
+        $key = array_search('webwx_data_ticket', array_column($cookies, 'Name'), true);
 
         return $cookies[$key]['Value'];
     }
 
     /**
-     * 把请求数组转为multipart模式
+     * 把请求数组转为multipart模式.
      *
      * @param $data
+     *
      * @return array
      */
     private static function dataToMultipart($data)
@@ -151,10 +154,10 @@ trait UploadAble
 
         foreach ($data as $key => $item) {
             $field = [
-                'name' => $key,
-                'contents' => $item
+                'name'     => $key,
+                'contents' => $item,
             ];
-            if($key === 'filename'){
+            if ($key === 'filename') {
                 $field['filename'] = basename(static::$file);
             }
             $result[] = $field;
@@ -162,5 +165,4 @@ trait UploadAble
 
         return $result;
     }
-
 }

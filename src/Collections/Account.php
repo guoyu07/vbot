@@ -1,40 +1,40 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: Hanson
- * Date: 2016/12/13
- * Time: 20:56
+
+/*
+ * This file is part of PHP CS Fixer.
+ * (c) pei.greet <pei.greet@qq.com>
+ * This source file is subject to the MIT license that is bundled
+ * with this source code in the file LICENSE.
  */
 
 namespace Hanson\Vbot\Collections;
 
-
 class Account
 {
-
     /**
      * @var Account
      */
-    static $instance = null;
+    public static $instance = null;
 
     /**
-     * create a single instance
+     * create a single instance.
      *
      * @return Account
      */
     public static function getInstance()
     {
         if (static::$instance === null) {
-            static::$instance = new Account();
+            static::$instance = new self();
         }
 
         return static::$instance;
     }
 
     /**
-     * 根据username获取账号
+     * 根据username获取账号.
      *
      * @param $username
+     *
      * @return mixed
      */
     public function getAccount($username)
@@ -47,5 +47,4 @@ class Account
 
         return $account ?: member()->get($username, []);
     }
-
 }

@@ -1,9 +1,10 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: HanSon
- * Date: 2017/1/13
- * Time: 15:48
+
+/*
+ * This file is part of PHP CS Fixer.
+ * (c) pei.greet <pei.greet@qq.com>
+ * This source file is subject to the MIT license that is bundled
+ * with this source code in the file LICENSE.
  */
 
 namespace Hanson\Vbot\Message\Entity;
@@ -32,30 +33,31 @@ class Recall extends Message implements MessageInterface
         $this->make();
     }
 
+    public function make()
+    {
+        $msgId = $this->parseMsgId($this->msg['Content']);
+
+        /* @var Message $message */
+        $this->origin = message()->get($msgId, null);
+
+        if ($this->origin) {
+            $this->nickname = $this->origin->sender ? $this->origin->sender['NickName'] : account()->getAccount($this->origin->msg['FromUserName'])['NickName'];
+            $this->setContent();
+        }
+    }
+
     /**
-     * 解析message获取msgId
+     * 解析message获取msgId.
      *
      * @param $xml
+     *
      * @return string msgId
      */
     private function parseMsgId($xml)
     {
         preg_match('/<msgid>(\d+)<\/msgid>/', $xml, $matches);
+
         return $matches[1];
-    }
-
-    public function make()
-    {
-        $msgId = $this->parseMsgId($this->msg['Content']);
-
-        /** @var Message $message */
-        $this->origin = message()->get($msgId, null);
-
-        if($this->origin){
-            $this->nickname = $this->origin->sender ? $this->origin->sender['NickName'] : account()->getAccount($this->origin->msg['FromUserName'])['NickName'];
-            $this->setContent();
-        }
-
     }
 
     private function setContent()

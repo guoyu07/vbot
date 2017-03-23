@@ -1,27 +1,26 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: HanSon
- * Date: 2017/1/10
- * Time: 16:51
+
+/*
+ * This file is part of PHP CS Fixer.
+ * (c) pei.greet <pei.greet@qq.com>
+ * This source file is subject to the MIT license that is bundled
+ * with this source code in the file LICENSE.
  */
 
 namespace Hanson\Vbot\Message\Entity;
 
-
-use Hanson\Vbot\Support\Console;
-use Hanson\Vbot\Support\FileManager;
 use Hanson\Vbot\Message\MediaInterface;
 use Hanson\Vbot\Message\MediaTrait;
 use Hanson\Vbot\Message\MessageInterface;
 use Hanson\Vbot\Message\UploadAble;
+use Hanson\Vbot\Support\Console;
+use Hanson\Vbot\Support\FileManager;
 
 class Image extends Message implements MessageInterface, MediaInterface
 {
-
     use UploadAble, MediaTrait;
 
-    static $folder = 'jpg';
+    public static $folder = 'jpg';
 
     public function __construct($msg)
     {
@@ -43,27 +42,29 @@ class Image extends Message implements MessageInterface, MediaInterface
 
         if (!$response) {
             Console::log("文件 {$file} 上传失败", Console::WARNING);
+
             return false;
         }
 
         $mediaId = $response['MediaId'];
 
-        $url = sprintf(server()->baseUri . '/webwxsendmsgimg?fun=async&f=json&pass_ticket=%s', server()->passTicket);
+        $url  = sprintf(server()->baseUri . '/webwxsendmsgimg?fun=async&f=json&pass_ticket=%s', server()->passTicket);
         $data = [
             'BaseRequest' => server()->baseRequest,
-            'Msg' => [
-                'Type' => 3,
-                'MediaId' => $mediaId,
+            'Msg'         => [
+                'Type'         => 3,
+                'MediaId'      => $mediaId,
                 'FromUserName' => myself()->username,
-                'ToUserName' => $username,
-                'LocalID' => time() * 1e4,
-                'ClientMsgId' => time() * 1e4
-            ]
+                'ToUserName'   => $username,
+                'LocalID'      => time() * 1e4,
+                'ClientMsgId'  => time() * 1e4,
+            ],
         ];
         $result = http()->json($url, $data, true);
 
         if ($result['BaseResponse']['Ret'] != 0) {
             Console::log('发送图片失败', Console::WARNING);
+
             return false;
         }
 
@@ -77,7 +78,7 @@ class Image extends Message implements MessageInterface, MediaInterface
 
     public function download()
     {
-        $url = server()->baseUri . sprintf('/webwxgetmsgimg?MsgID=%s&skey=%s', $this->msg['MsgId'], server()->skey);
+        $url     = server()->baseUri . sprintf('/webwxgetmsgimg?MsgID=%s&skey=%s', $this->msg['MsgId'], server()->skey);
         $content = http()->get($url);
         FileManager::download($this->msg['MsgId'] . '.jpg', $content, static::$folder);
     }

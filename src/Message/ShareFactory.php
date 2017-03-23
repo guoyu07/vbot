@@ -1,9 +1,10 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: Hanson
- * Date: 2017/1/15
- * Time: 12:29
+
+/*
+ * This file is part of PHP CS Fixer.
+ * (c) pei.greet <pei.greet@qq.com>
+ * This source file is subject to the MIT license that is bundled
+ * with this source code in the file LICENSE.
  */
 
 namespace Hanson\Vbot\Message;
@@ -16,10 +17,9 @@ use Hanson\Vbot\Support\Content;
 
 class ShareFactory
 {
+    public $type;
 
     protected $xml;
-
-    public $type;
 
     public function make($msg)
     {
@@ -27,26 +27,26 @@ class ShareFactory
 
         $this->parse($xml);
 
-        if($this->type == 6){
+        if ($this->type == 6) {
             return new File($msg);
-        }else if(official()->get($msg['FromUserName'])){
+        } elseif (official()->get($msg['FromUserName'])) {
             return new Official($msg);
-        }else if($this->type == 33){
+        } elseif ($this->type == 33) {
             return new Mina($msg);
-        }else{
+        } else {
             return new Share($msg);
         }
     }
 
     private function parse($xml)
     {
-        if(starts_with($xml, '@')){
+        if (starts_with($xml, '@')) {
             $xml = preg_replace('/(@\S+:\\n)/', '', $xml);
         }
 
-        $array = (array)simplexml_load_string($xml, 'SimpleXMLElement', LIBXML_NOCDATA);
+        $array = (array) simplexml_load_string($xml, 'SimpleXMLElement', LIBXML_NOCDATA);
 
-        $this->xml = $info = (array)$array['appmsg'];
+        $this->xml = $info = (array) $array['appmsg'];
 
         $this->type = $info['type'];
     }

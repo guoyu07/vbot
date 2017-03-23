@@ -1,27 +1,26 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: Administrator
- * Date: 2017/1/24
- * Time: 17:44
+
+/*
+ * This file is part of PHP CS Fixer.
+ * (c) pei.greet <pei.greet@qq.com>
+ * This source file is subject to the MIT license that is bundled
+ * with this source code in the file LICENSE.
  */
 
 namespace Hanson\Vbot\Support;
 
-
 /**
- * Content 处理类
+ * Content 处理类.
  *
  * Class Content
- * @package Hanson\Vbot\Support
  */
 class Content
 {
-
     /**
-     * 格式化Content
+     * 格式化Content.
      *
      * @param $content
+     *
      * @return string
      */
     public static function formatContent($content)

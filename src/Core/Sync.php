@@ -1,44 +1,44 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: HanSon
- * Date: 2017/1/14
- * Time: 11:21
+
+/*
+ * This file is part of PHP CS Fixer.
+ * (c) pei.greet <pei.greet@qq.com>
+ * This source file is subject to the MIT license that is bundled
+ * with this source code in the file LICENSE.
  */
 
 namespace Hanson\Vbot\Core;
-
 
 use Hanson\Vbot\Support\Console;
 
 class Sync
 {
-
     /**
-     * get a message code
+     * get a message code.
      *
      * @return array
      */
     public function checkSync()
     {
         $url = 'https://webpush.' . server()->domain . '/cgi-bin/mmwebwx-bin/synccheck?' . http_build_query([
-                'r' => time(),
-                'sid' => server()->sid,
-                'uin' => server()->uin,
-                'skey' => server()->skey,
+                'r'        => time(),
+                'sid'      => server()->sid,
+                'uin'      => server()->uin,
+                'skey'     => server()->skey,
                 'deviceid' => server()->deviceId,
-                'synckey' => server()->syncKeyStr,
-                '_' => time()
+                'synckey'  => server()->syncKeyStr,
+                '_'        => time(),
             ]);
 
         $content = http()->get($url);
 
-        try{
+        try {
             preg_match('/window.synccheck=\{retcode:"(\d+)",selector:"(\d+)"\}/', $content, $matches);
 
             return [$matches[1], $matches[2]];
-        }catch (\Exception $e){
+        } catch (\Exception $e) {
             Console::log('Sync check return:' . $content);
+
             return [-1, -1];
         }
     }
@@ -47,25 +47,25 @@ class Sync
     {
         $url = sprintf(server()->baseUri . '/webwxsync?sid=%s&skey=%s&lang=en_US&pass_ticket=%s', server()->sid, server()->skey, server()->passTicket);
 
-        try{
+        try {
             $result = http()->json($url, [
                 'BaseRequest' => server()->baseRequest,
-                'SyncKey' => server()->syncKey,
-                'rr' => ~time()
+                'SyncKey'     => server()->syncKey,
+                'rr'          => ~time(),
             ], true, ['timeout' => 35]);
 
-            if($result['BaseResponse']['Ret'] == 0){
+            if ($result['BaseResponse']['Ret'] == 0) {
                 $this->generateSyncKey($result);
             }
 
             return $result;
-        }catch (\Exception $e){
+        } catch (\Exception $e) {
             $this->sync();
         }
     }
 
     /**
-     * generate a sync key
+     * generate a sync key.
      *
      * @param $result
      */
@@ -75,7 +75,7 @@ class Sync
 
         $syncKey = [];
 
-        if(is_array(server()->syncKey['List'])){
+        if (is_array(server()->syncKey['List'])) {
             foreach (server()->syncKey['List'] as $item) {
                 $syncKey[] = $item['Key'] . '_' . $item['Val'];
             }
@@ -85,7 +85,7 @@ class Sync
     }
 
     /**
-     * check message time
+     * check message time.
      *
      * @param $time
      */
@@ -93,13 +93,13 @@ class Sync
     {
         $checkTime = time() - $time;
 
-        if($checkTime < 0.8){
+        if ($checkTime < 0.8) {
             sleep(1 - $checkTime);
         }
     }
 
     /**
-     * debug while the sync
+     * debug while the sync.
      *
      * @param $retCode
      * @param $selector
@@ -109,7 +109,7 @@ class Sync
     {
         Console::log('retcode:' . $retCode . ' selector:' . $selector, Console::WARNING);
 
-        if($sleep){
+        if ($sleep) {
             sleep($sleep);
         }
     }

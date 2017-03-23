@@ -1,20 +1,19 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: Hanson
- * Date: 2016/12/9
- * Time: 21:13
+
+/*
+ * This file is part of PHP CS Fixer.
+ * (c) pei.greet <pei.greet@qq.com>
+ * This source file is subject to the MIT license that is bundled
+ * with this source code in the file LICENSE.
  */
 
 namespace Hanson\Vbot\Core;
 
 use GuzzleHttp\Client as HttpClient;
-use Hanson\Vbot\Support\Console;
 
 class Http
 {
-
-    static $instance;
+    public static $instance;
 
     protected $client;
 
@@ -23,8 +22,8 @@ class Http
      */
     public static function getInstance()
     {
-        if(!static::$instance){
-            static::$instance = new Http();
+        if (!static::$instance) {
+            static::$instance = new self();
         }
 
         return static::$instance;
@@ -32,7 +31,7 @@ class Http
 
     public function get($url, array $query = [], array $options = [])
     {
-        if($query){
+        if ($query) {
             $options['query'] = $query;
         }
 
@@ -83,7 +82,8 @@ class Http
     /**
      * @param $url
      * @param string $method
-     * @param array $options
+     * @param array  $options
+     *
      * @return string
      */
     public function request($url, $method = 'GET', $options = [])
@@ -92,6 +92,4 @@ class Http
 
         return $response->getBody()->getContents();
     }
-
-
 }

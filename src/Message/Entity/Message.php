@@ -1,26 +1,22 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: Hanson
- * Date: 2016/12/15
- * Time: 0:12
+
+/*
+ * This file is part of PHP CS Fixer.
+ * (c) pei.greet <pei.greet@qq.com>
+ * This source file is subject to the MIT license that is bundled
+ * with this source code in the file LICENSE.
  */
 
 namespace Hanson\Vbot\Message\Entity;
 
-
 use Carbon\Carbon;
-use Hanson\Vbot\Core\Server;
 use Hanson\Vbot\Collections\Contact;
 use Hanson\Vbot\Collections\Official;
 use Hanson\Vbot\Collections\Special;
 use Hanson\Vbot\Support\Content;
-use Hanson\Vbot\Support\FileManager;
-use Hanson\Vbot\Support\Console;
 
 class Message
 {
-
     /**
      * @var array 消息来源
      */
@@ -48,7 +44,7 @@ class Message
 
     public $msg;
 
-    static $mediaCount = -1;
+    public static $mediaCount = -1;
 
     public function __construct($msg)
     {
@@ -58,15 +54,20 @@ class Message
         $this->setFromType();
 
         $this->msg['Content'] = Content::formatContent($this->msg['Content']);
-        if($this->fromType === 'Group'){
+        if ($this->fromType === 'Group') {
             $this->handleGroupContent($this->msg['Content']);
         }
 
         $this->time = $msg['CreateTime'];
     }
 
+    public function __toString()
+    {
+        return $this->content;
+    }
+
     /**
-     * 设置消息发送者
+     * 设置消息发送者.
      */
     private function setFrom()
     {
@@ -79,8 +80,8 @@ class Message
             $this->fromType = 'System';
         } elseif ($this->msg['FromUserName'] === myself()->username) {
             $this->fromType = 'Self';
-            $this->from = account()->getAccount($this->msg['ToUserName']);
-        } elseif (substr($this->msg['FromUserName'], 0, 2) === '@@') { # group
+            $this->from     = account()->getAccount($this->msg['ToUserName']);
+        } elseif (substr($this->msg['FromUserName'], 0, 2) === '@@') { // group
             $this->fromType = 'Group';
         } elseif (contact()->get($this->msg['FromUserName'])) {
             $this->fromType = 'Contact';
@@ -94,24 +95,18 @@ class Message
     }
 
     /**
-     * 处理群发消息的内容
+     * 处理群发消息的内容.
      *
      * @param $content string 内容
      */
     private function handleGroupContent($content)
     {
-        if(!$content || !str_contains($content, ":\n")){
+        if (!$content || !str_contains($content, ":\n")) {
             return;
         }
         list($uid, $content) = explode(":\n", $content, 2);
 
-        $this->sender = account()->getAccount($uid);
+        $this->sender         = account()->getAccount($uid);
         $this->msg['Content'] = Content::replaceBr($content);
     }
-
-    public function __toString()
-    {
-        return $this->content;
-    }
-
 }
